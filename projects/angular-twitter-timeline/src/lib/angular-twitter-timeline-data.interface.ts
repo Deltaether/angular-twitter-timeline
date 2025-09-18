@@ -1,8 +1,8 @@
-export class AngularTwitterTimelineDataInterface {
+export interface AngularTwitterTimelineDataInterface {
   /**
    * profile or URL
    */
-  sourceType: string = 'profile';
+  sourceType: string;
   /**
    * Valid Twitter username
    */

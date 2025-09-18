@@ -8,12 +8,12 @@ export class AngularTwitterTimelineService {
   private TWITTER_SCRIPT_ID = 'twitter-wjs';
   private TWITTER_WIDGET_URL = 'https://platform.twitter.com/widgets.js';
 
-  loadScript(): Observable<any> {
+  loadScript(): Observable<unknown> {
     return new Observable((observer) => {
 
       this.startScriptLoad();
 
-      (<any>window)['twttr'].ready((twttr: any) => {
+      (window as any)['twttr'].ready((twttr: unknown) => {
         observer.next(twttr);
         observer.complete();
       });
@@ -21,23 +21,23 @@ export class AngularTwitterTimelineService {
     });
   }
 
-  private startScriptLoad() {
-    (<any>window)['twttr'] = (function (d, s, id, url) {
-      let script: any,
-        firstScriptEl: any = d.getElementsByTagName(s)[0],
-        twitterScript: any = (<any>window)['twttr'] || {};
+  private startScriptLoad(): void {
+    (window as any)['twttr'] = (function (d: Document, s: string, id: string, url: string) {
+      let script: HTMLScriptElement,
+        firstScriptEl: Element = d.getElementsByTagName(s)[0],
+        twitterScript: any = (window as any)['twttr'] || {};
       if (d.getElementById(id)) {
         return twitterScript;
       }
 
-      script = d.createElement(s);
+      script = d.createElement(s) as HTMLScriptElement;
       script.id = id;
       script.src = url;
-      firstScriptEl.parentNode.insertBefore(script, firstScriptEl);
+      firstScriptEl.parentNode?.insertBefore(script, firstScriptEl);
 
       twitterScript._e = [];
 
-      twitterScript.ready = function (f: any) {
+      twitterScript.ready = function (f: () => void) {
         twitterScript._e.push(f);
       };
 

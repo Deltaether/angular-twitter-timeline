@@ -1,4 +1,4 @@
-import {Component, ElementRef, Input, OnChanges} from '@angular/core';
+import {Component, ElementRef, Input, OnChanges, OnDestroy, ErrorHandler, inject} from '@angular/core';
 import {AngularTwitterTimelineService} from "./angular-twitter-timeline.service";
 import {AngularTwitterTimelineOptionsInterface} from "./angular-twitter-timeline-options.interface";
 import {AngularTwitterTimelineDataInterface} from "./angular-twitter-timeline-data.interface";
@@ -6,9 +6,11 @@ import {AngularTwitterTimelineDataInterface} from "./angular-twitter-timeline-da
 @Component({
   selector: 'angular-twitter-timeline',
   template: ``,
+  standalone: true,
   providers: [AngularTwitterTimelineService]
 })
-export class AngularTwitterTimelineComponent implements OnChanges {
+export class AngularTwitterTimelineComponent implements OnChanges, OnDestroy {
+  private errorHandler = inject(ErrorHandler);
   @Input() data?: AngularTwitterTimelineDataInterface;
   /**
    * A hash of additional options to configure the widget
@@ -54,7 +56,7 @@ export class AngularTwitterTimelineComponent implements OnChanges {
         next: () => {
           let nativeElement = this.element.nativeElement;
           nativeElement.innerHTML = "";
-          (<any>window)['twttr']
+          (window as any)['twttr']
             .widgets
             .createTimeline(
               {...this.defaultData, ...this.data},
@@ -63,10 +65,18 @@ export class AngularTwitterTimelineComponent implements OnChanges {
             )
             .then(() => {
             })
-            .catch((error: any) => console.error(error))
+            .catch((error: unknown) => this.handleError(error))
         },
-        error: (error: any) => console.error(error),
+        error: (error: unknown) => this.handleError(error),
       });
+  }
+
+  private handleError(error: unknown): void {
+    this.errorHandler.handleError(error);
+  }
+
+  ngOnDestroy(): void {
+    // Clean up any subscriptions or resources if needed
   }
 
 }

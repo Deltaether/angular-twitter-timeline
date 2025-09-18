@@ -1,4 +1,4 @@
-export class AngularTwitterTimelineOptionsInterface {
+export interface AngularTwitterTimelineOptionsInterface {
   /**
    * Render a timeline statically, displaying only n number of Tweets.
    * Range: 1-20
